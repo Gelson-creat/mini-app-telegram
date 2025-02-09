@@ -1,19 +1,22 @@
-require("dotenv").config();
-const express = require("express");
-const path = require("path");
+require('dotenv').config();
+const express = require('express');
+const mongoose = require('mongoose');
 
 const app = express();
 const PORT = process.env.PORT || 8080;
 
-// Servir arquivos estáticos da pasta public
-app.use(express.static(path.join(__dirname, "public")));
+// Conectando ao MongoDB
+mongoose.connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+})
+.then(() => console.log("🔥 Conexão com o MongoDB bem-sucedida!"))
+.catch(err => console.error("❌ Erro ao conectar ao MongoDB:", err));
 
-// Rota principal para carregar o Mini App
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
+app.get('/', (req, res) => {
+    res.send("✅ O servidor está rodando e conectado ao MongoDB!");
 });
 
-// Servidor rodando
 app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
+    console.log(`🚀 Servidor rodando na porta ${PORT}`);
 });
