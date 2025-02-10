@@ -18,10 +18,12 @@ app.use('/api/ctf', ctfRoutes);
 
 const PORT = process.env.PORT || 8080;
 
+mongoose.set('strictQuery', false);
+
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 }).then(() => {
-  console.log('✅ MongoDB conectado');
-  app.listen(PORT, () => console.log(`🚀 Servidor rodando na porta ${PORT}`));
-}).catch(err => console.log(`❌ Erro ao conectar MongoDB:`, err));
+  console.log('MongoDB conectado');
+  app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
+}).catch(err => console.log(err));
