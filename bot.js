@@ -1,71 +1,39 @@
 require('dotenv').config();
-const { Telegraf, Markup } = require('telegraf');
+const { Telegraf } = require('telegraf');
 const express = require('express');
 
 const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
 const app = express();
 
-app.use(express.json());
+const PORT = process.env.PORT || 8080;
+const WEBHOOK_URL = `https://mini-app-telegram-production-1f4d.up.railway.app`; // Use a URL do seu Railway
 
-app.post(`/bot${process.env.TELEGRAM_BOT_TOKEN}`, (req, res) => {
-    bot.handleUpdate(req.body, res);
-});
+// Configurar o webhook no Telegram
+bot.telegram.setWebhook(`${WEBHOOK_URL}/webhook`);
 
-// Configura o Webhook
-bot.telegram.setWebhook(`${process.env.WEBHOOK_URL}/bot${process.env.TELEGRAM_BOT_TOKEN}`);
+// Middleware para receber atualizações do Telegram via webhook
+app.use(bot.webhookCallback('/webhook'));
 
 app.get('/', (req, res) => {
-    res.send('🤖 Bot do Telegram está rodando!');
+  res.send('🤖 Bot do Telegram está rodando!');
 });
 
-app.listen(process.env.PORT || 8080, () => {
-    console.log(`Servidor rodando na porta ${process.env.PORT || 8080}`);
+app.listen(PORT, () => {
+  console.log(`🚀 Servidor rodando na porta ${PORT}`);
 });
 
-// Comandos do Bot
 bot.start((ctx) => {
-    ctx.reply(
-        '🚀 Bem-vindo ao Mini App do Telegram!\nEscolha uma opção abaixo:',
-        Markup.keyboard([
-            ['📋 Ver Anúncios', '💰 Comprar CTF'],
-            ['👤 Minha Conta', '❓ Suporte']
-        ])
-        .resize()
-        .oneTime()
-    );
+    ctx.reply('🚀 Bem-vindo ao Mini App do Telegram!\nEscolha uma opção abaixo:', {
+        reply_markup: {
+            keyboard: [
+                ['📋 Ver Anúncios', '💰 Comprar CTF'],
+                ['👤 Minha Conta', '❓ Suporte']
+            ],
+            resize_keyboard: true
+        }
+    });
 });
 
-bot.hears('📋 Ver Anúncios', async (ctx) => {
-    ctx.reply('🔍 Aqui estão os anúncios disponíveis:\n(Em breve, integração com o banco de dados)');
-});
+// Adicione aqui os comandos do seu bot...
 
-bot.hears('💰 Comprar CTF', async (ctx) => {
-    ctx.reply('💵 Escolha um plano para comprar CTF:', 
-        Markup.inlineKeyboard([
-            [Markup.button.callback('Plano Básico (5%)', 'comprar_basico')],
-            [Markup.button.callback('Plano Plus (7%)', 'comprar_plus')]
-        ])
-    );
-});
-
-bot.action('comprar_basico', async (ctx) => {
-    await ctx.answerCbQuery();
-    ctx.reply('✅ Você escolheu o Plano Básico! Entre em contato para concluir a compra.');
-});
-
-bot.action('comprar_plus', async (ctx) => {
-    await ctx.answerCbQuery();
-    ctx.reply('✅ Você escolheu o Plano Plus! Entre em contato para concluir a compra.');
-});
-
-bot.hears('👤 Minha Conta', async (ctx) => {
-    ctx.reply('👤 Seu painel de conta:\n- Saldo CTF: (Em breve integração)\n- Anúncios ativos: (Em breve)');
-});
-
-bot.hears('❓ Suporte', async (ctx) => {
-    ctx.reply('📞 Entre em contato com o suporte:\n@seu_suporte_telegram');
-});
-
-// Para evitar encerramento forçado no Railway
-process.once('SIGINT', () => bot.stop('SIGINT'));
-process.once('SIGTERM', () => bot.stop('SIGTERM'));
+console.log('🤖 Bot do Telegram iniciado com sucesso!');
