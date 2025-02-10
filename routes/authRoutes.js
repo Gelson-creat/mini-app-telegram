@@ -8,9 +8,9 @@ router.post('/register', async (req, res) => {
     const { nome, cpf, email, telefone } = req.body;
     const novoUsuario = new User({ nome, cpf, email, telefone });
     await novoUsuario.save();
-    res.status(201).json({ message: 'Usuário cadastrado com sucesso' });
+    res.status(201).json({ message: 'Usuário registrado com sucesso!' });
   } catch (error) {
-    res.status(500).json({ error: 'Erro ao cadastrar usuário' });
+    res.status(500).json({ error: 'Erro ao registrar usuário' });
   }
 });
 
