@@ -1,34 +1,55 @@
 require('dotenv').config();
-const { Telegraf } = require('telegraf');
+const { Telegraf, Markup } = require('telegraf');
 
 const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
 
 bot.start((ctx) => {
-    ctx.reply('Bem-vindo ao Mini App do Telegram! Escolha uma opção:', {
-        reply_markup: {
-            inline_keyboard: [
-                [{ text: '📢 Ver Anúncios', callback_data: 'ver_anuncios' }],
-                [{ text: '💰 Comprar CTF', callback_data: 'comprar_ctf' }],
-                [{ text: '📊 Meu Saldo', callback_data: 'meu_saldo' }]
-            ]
-        }
-    });
+    ctx.reply(
+        '🚀 Bem-vindo ao Mini App do Telegram!\nEscolha uma opção abaixo:',
+        Markup.keyboard([
+            ['📋 Ver Anúncios', '💰 Comprar CTF'],
+            ['👤 Minha Conta', '❓ Suporte']
+        ])
+        .resize()
+        .oneTime()
+    );
 });
 
-bot.action('ver_anuncios', (ctx) => {
-    ctx.answerCbQuery();
-    ctx.reply('🔍 Aqui estão os anúncios disponíveis...');
+// Respostas para cada opção
+bot.hears('📋 Ver Anúncios', async (ctx) => {
+    ctx.reply('🔍 Aqui estão os anúncios disponíveis:\n(Em breve, integração com o banco de dados)');
 });
 
-bot.action('comprar_ctf', (ctx) => {
-    ctx.answerCbQuery();
-    ctx.reply('💸 Digite o valor que deseja comprar:');
+bot.hears('💰 Comprar CTF', async (ctx) => {
+    ctx.reply('💵 Escolha um plano para comprar CTF:', 
+        Markup.inlineKeyboard([
+            [Markup.button.callback('Plano Básico (5%)', 'comprar_basico')],
+            [Markup.button.callback('Plano Plus (7%)', 'comprar_plus')]
+        ])
+    );
 });
 
-bot.action('meu_saldo', (ctx) => {
-    ctx.answerCbQuery();
-    ctx.reply('📊 Seu saldo atual é de: 0 CTF');
+bot.action('comprar_basico', async (ctx) => {
+    await ctx.answerCbQuery();
+    ctx.reply('✅ Você escolheu o Plano Básico! Entre em contato para concluir a compra.');
 });
 
-bot.launch();
-console.log('🤖 Bot do Telegram está rodando...');
+bot.action('comprar_plus', async (ctx) => {
+    await ctx.answerCbQuery();
+    ctx.reply('✅ Você escolheu o Plano Plus! Entre em contato para concluir a compra.');
+});
+
+bot.hears('👤 Minha Conta', async (ctx) => {
+    ctx.reply('👤 Seu painel de conta:\n- Saldo CTF: (Em breve integração)\n- Anúncios ativos: (Em breve)');
+});
+
+bot.hears('❓ Suporte', async (ctx) => {
+    ctx.reply('📞 Entre em contato com o suporte:\n@seu_suporte_telegram');
+});
+
+// Inicia o bot
+bot.launch().then(() => console.log('🤖 Bot do Telegram iniciado com sucesso!'));
+
+// Para evitar encerramento forçado no Railway
+process.once('SIGINT', () => bot.stop('SIGINT'));
+process.once('SIGTERM', () => bot.stop('SIGTERM'));
