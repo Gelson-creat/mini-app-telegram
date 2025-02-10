@@ -1,18 +1,20 @@
 {
-  "name": "mini-app",
+  "name": "mini-app-telegram",
   "version": "1.0.0",
-  "description": "Mini App do Telegram",
+  "description": "Mini App do Telegram integrado ao Railway",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js & node bot.js"
+    "start": "node server.js",
+    "bot": "node bot.js"
   },
   "dependencies": {
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
-    "mongoose": "^6.2.1",
-    "cors": "^2.8.5",
-    "body-parser": "^1.20.1",
-    "axios": "^0.27.2",
-    "telegraf": "^4.7.0"
-  }
+    "telegraf": "^4.12.2"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "author": "Seu Nome",
+  "license": "MIT"
 }
