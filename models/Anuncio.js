@@ -1,14 +1,11 @@
 const mongoose = require('mongoose');
 
 const AnuncioSchema = new mongoose.Schema({
-  categoria: String,
-  titulo: String,
-  descricao: String,
-  fotos: [String],
-  preco: Number,
-  pagamento: String,
-  plano: String,
-  dataCriacao: { type: Date, default: Date.now }
+    titulo: { type: String, required: true },
+    descricao: { type: String, required: true },
+    preco: { type: Number, required: true },
+    usuarioId: { type: mongoose.Schema.Types.ObjectId, ref: 'Usuario', required: true },
+    criadoEm: { type: Date, default: Date.now }
 });
 
 module.exports = mongoose.model('Anuncio', AnuncioSchema);
