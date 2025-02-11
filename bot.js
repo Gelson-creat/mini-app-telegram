@@ -8,27 +8,22 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 const WEBHOOK_URL = process.env.WEBHOOK_URL;
 
+// Configurar Webhook no Telegram
 bot.telegram.setWebhook(`${WEBHOOK_URL}/webhook`);
-app.use(bot.webhookCallback('/webhook'));
 
+// Middleware para receber atualizações do Telegram
+app.use(express.json());
+app.post('/webhook', (req, res) => {
+    bot.handleUpdate(req.body, res);
+});
+
+// Inicializa o servidor Express
 app.get('/', (req, res) => {
-    res.send('🤖 Bot do Telegram está rodando!');
+    res.send('🚀 Bot do Telegram está rodando com Webhook!');
 });
 
 app.listen(PORT, () => {
     console.log(`🚀 Servidor rodando na porta ${PORT}`);
 });
 
-bot.start((ctx) => {
-    ctx.reply('🚀 Bem-vindo ao Mini App do Telegram! Escolha uma opção:', {
-        reply_markup: {
-            keyboard: [
-                ['📋 Ver Anúncios', '💰 Comprar CTF'],
-                ['👤 Minha Conta', '❓ Suporte']
-            ],
-            resize_keyboard: true
-        }
-    });
-});
-
-bot.launch();
+// Remove o `bot.launch()` para evitar conflito com Webhook
